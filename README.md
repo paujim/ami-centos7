@@ -1,0 +1,1 @@
+# ami-centos7
