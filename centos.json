@@ -1,0 +1,40 @@
+{
+    "variables": {
+        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "region": "us-west-2",
+            "source_ami": "ami-01ed306a12b7d1c96",
+            "instance_type": "t2.micro",
+            "ssh_username": "centos",
+            "ami_name": "CENTOS_{{isotime \"2006_0102_030405\" | clean_resource_name}}",
+            "tags": {
+                "OS_Version": "CentOS",
+                "Release": "7",
+                "Base_AMI_Name": "{{ .SourceAMIName }}",
+                "Name": "Base CentOS7"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "bootstrap.sh",
+            "destination": "/tmp/bootstrap.sh"
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "echo '*** Running bootstrap.sh script ***'",
+                "chmod +x /tmp/bootstrap.sh",
+                "/tmp/bootstrap.sh",
+                "rm -f /tmp/bootstrap.sh"
+            ]
+        }
+    ]
+}
